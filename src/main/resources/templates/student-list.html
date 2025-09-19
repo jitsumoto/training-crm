@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student 一覧</title>
+</head>
+<body>
+<h1>Student 一覧</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>名前</th>
+        <th>メール</th>
+        <th>電話番号</th>
+        <th>クラス</th>
+    </tr>
+    <tr th:each="s : ${students}">
+        <td th:text="${s.studentId}"></td>
+        <td th:text="${s.name}"></td>
+        <td th:text="${s.email}"></td>
+        <td th:text="${s.phone}"></td>
+        <td th:text="${s.className}"></td>
+    </tr>
+</table>
+
+<hr/>
+<a th:href="@{/students/form}">新規登録</a>
+</body>
+</html>

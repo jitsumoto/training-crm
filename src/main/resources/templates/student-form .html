@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student 登録</title>
+</head>
+<body>
+<h1>Student 登録</h1>
+<form th:action="@{/students}" method="post">
+    名前: <input type="text" name="name"/><br/>
+    メール: <input type="text" name="email"/><br/>
+    電話番号: <input type="text" name="phone"/><br/>
+    クラス: <input type="text" name="className"/><br/>
+    <button type="submit">登録</button>
+</form>
+
+<hr/>
+<a th:href="@{/students/list}">一覧へ</a>
+</body>
+</html>
