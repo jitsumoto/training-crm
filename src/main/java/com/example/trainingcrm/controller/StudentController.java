@@ -16,7 +16,7 @@ import com.example.trainingcrm.entity.Student;
 import com.example.trainingcrm.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
-
+//Test commit from Eclipse
 @RestController
 @RequestMapping("/students")
 @RequiredArgsConstructor
