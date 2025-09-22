@@ -2,17 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Students List</title>
+    <title>学生管理</title>
 </head>
 <body>
-    <h1>Students List</h1>
+    <h1>学生一覧</h1>
+
+    <!-- 新規登録ボタン -->
+    <a th:href="@{/students/new}">新規登録</a>
+
+    <!-- 一覧表 -->
     <table border="1">
         <tr>
             <th>ID</th>
-            <th>Name</th>
+            <th>名前</th>
             <th>Email</th>
-            <th>Phone</th>
-            <th>Class</th>
+            <th>電話番号</th>
+            <th>クラス</th>
+            <th>操作</th>
         </tr>
         <tr th:each="student : ${students}">
             <td th:text="${student.studentId}"></td>
@@ -20,6 +26,11 @@
             <td th:text="${student.email}"></td>
             <td th:text="${student.phone}"></td>
             <td th:text="${student.className}"></td>
+            <td>
+                <a th:href="@{/students/edit/{id}(id=${student.studentId})}">編集</a>
+                <a th:href="@{/students/delete/{id}(id=${student.studentId})}"
+                   onclick="return confirm('削除しますか？');">削除</a>
+            </td>
         </tr>
     </table>
 </body>

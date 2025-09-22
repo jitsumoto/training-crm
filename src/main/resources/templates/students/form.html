@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生フォーム</title>
+</head>
+<body>
+    <h1 th:text="${student.studentId} != null ? '学生編集' : '新規学生登録'"></h1>
+
+    <form th:action="@{/students/save}" th:object="${student}" method="post">
+        <input type="hidden" th:field="*{studentId}"/>
+
+        名前: <input type="text" th:field="*{name}"/><br/>
+        Email: <input type="email" th:field="*{email}"/><br/>
+        電話: <input type="text" th:field="*{phone}"/><br/>
+        クラス: <input type="text" th:field="*{className}"/><br/>
+
+        <button type="submit">保存</button>
+    </form>
+
+    <a th:href="@{/students/list}">戻る</a>
+</body>
+</html>
