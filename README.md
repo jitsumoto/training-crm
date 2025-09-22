@@ -27,6 +27,7 @@
 ---
 
 ## プロジェクト構成
+```
 training-crm/
 ├── pom.xml
 ├── src/
@@ -50,7 +51,7 @@ training-crm/
 │ │ └── student-form.html
 │ └── static/ # 今後のアセット置場
 └── target/ # ビルド生成物
-
+```
 
 ---
 
