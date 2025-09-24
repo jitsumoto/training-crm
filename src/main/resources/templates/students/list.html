@@ -29,7 +29,9 @@
             <td>
                 <a th:href="@{/students/edit/{id}(id=${student.studentId})}">編集</a>
                 <a th:href="@{/students/delete/{id}(id=${student.studentId})}"
-                   onclick="return confirm('削除しますか？');">削除</a>
+                   onclick="return confirm('削除しますか？');">削除</a>				|
+				        <!-- 成績一覧 -->
+				        <a th:href="@{/students/{id}/records/list(id=${student.studentId})}">成績一覧</a>
             </td>
         </tr>
     </table>

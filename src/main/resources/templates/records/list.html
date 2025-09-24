@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${student.name} + ' の成績一覧'"></title>
+</head>
+<body>
+<h1 th:text="${student.name} + ' の成績一覧'"></h1>
+
+<table border="1">
+    <tr>
+        <th>日付</th><th>レベル</th><th>スコア</th><th>操作</th>
+    </tr>
+    <tr th:each="record : ${records}">
+        <td th:text="${record.testDate}"></td>
+        <td th:text="${record.level}"></td>
+        <td th:text="${record.score}"></td>
+        <td>
+            <a th:href="@{/students/{studentId}/records/edit/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">編集</a> |
+            <a th:href="@{/students/{studentId}/records/delete/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">削除</a>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a th:href="@{/students/{id}/records/new(id=${student.studentId})}">新しい成績を追加</a>
+</p>
+
+<p><a th:href="@{/students/list}">← 学生一覧へ戻る</a></p>
+</body>
+</html>
