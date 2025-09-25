@@ -1,7 +1,7 @@
 # Training CRM
 
 職業訓練で作成した Spring Boot 学習用プロジェクトです。  
-学生（Student）の登録・一覧・更新・削除と、学習成績（Record）の管理を行うシンプルな CRM 風アプリケーションで、REST API と Thymeleaf ベースの画面をどちらも備えています。
+学生（Student）の登録・一覧・更新・削除と、学習成績（Record）、案件（Project）を扱うシンプルな CRM 風アプリケーションで、REST API と Thymeleaf ベースの画面をどちらも備えています。管理者ログインとユーザー管理機能を通じて、権限制御の学習にも利用できます。
 
 ---
 
@@ -9,9 +9,9 @@
 
 - 学生情報（名前・メール・電話・クラス）の CRUD
 - 学生と成績レコード（Record）の 1:N 関連管理
-- `/students` および `/{studentId}/records` を軸にした REST API
-- Thymeleaf テンプレートによる学生・成績の一覧／登録／編集 UI
-- Spring Security 設定済み（現在は全リクエスト許可）
+- `/students` / `/projects` を軸にした REST + 画面 UI
+- Thymeleaf テンプレートによる学生・成績・案件・ユーザー管理の CRUD 画面
+- Spring Security（フォームログイン & HTTP Basic）、BCrypt ハッシュ済み管理者アカウントを同梱
 
 ---
 
@@ -34,30 +34,52 @@ training-crm/
 ├── src/
 │   ├── main/java/com/example/trainingcrm/
 │   │   ├── TrainingCrmApplication.java
-│   │   ├── config/SecurityConfig.java
+│   │   ├── config/
+│   │   │   ├── DataInitializer.java
+│   │   │   └── SecurityConfig.java
 │   │   ├── controller/
-│   │   │   ├── StudentController.java      # 学生 REST API
+│   │   │   ├── AuthController.java
+│   │   │   ├── ProjectController.java      # 案件画面
 │   │   │   ├── RecordController.java       # 成績 REST API
+│   │   │   ├── RecordWebController.java    # 成績画面
+│   │   │   ├── StudentController.java      # 学生 REST API
 │   │   │   ├── StudentWebController.java   # 学生画面
-│   │   │   └── RecordWebController.java    # 成績画面
+│   │   │   └── UserController.java         # 管理者向けユーザー画面
+│   │   ├── dto/
+│   │   │   ├── ProjectForm.java
+│   │   │   └── UserForm.java
 │   │   ├── entity/
+│   │   │   ├── Project.java
+│   │   │   ├── Record.java
 │   │   │   ├── Student.java
-│   │   │   └── Record.java
+│   │   │   └── User.java
 │   │   ├── repository/
+│   │   │   ├── ProjectRepository.java
+│   │   │   ├── RecordRepository.java
 │   │   │   ├── StudentRepository.java
-│   │   │   └── RecordRepository.java
+│   │   │   └── UserRepository.java
 │   │   └── service/
+│   │       ├── CustomUserDetailsService.java
+│   │       ├── ProjectService.java
+│   │       ├── RecordService.java
 │   │       ├── StudentService.java
-│   │       └── RecordService.java
+│   │       └── UserService.java
 │   └── main/resources/
 │       ├── application.properties
 │       ├── templates/
+│       │   ├── login.html
+│       │   ├── projects/
+│       │   │   ├── form.html
+│       │   │   └── list.html
+│       │   ├── records/
+│       │   │   ├── form.html
+│       │   │   └── list.html
 │       │   ├── students/
-│       │   │   ├── list.html
-│       │   │   └── form.html
-│       │   └── records/
-│       │       ├── list.html
-│       │       └── form.html
+│       │   │   ├── form.html
+│       │   │   └── list.html
+│       │   └── users/
+│       │       ├── form.html
+│       │       └── list.html
 │       └── static/                        # 静的アセット置き場（未使用）
 └── target/                                # ビルド生成物
 ```
@@ -98,6 +120,17 @@ POST/PUT のリクエスト JSON 例:
 | DELETE   | `/students/{studentId}/records/{recordId}` | 成績削除                     |
 
 成績登録時は `Record` の JSON に `student`（少なくとも `studentId`）フィールドを含めて学生と紐づけてください。
+
+---
+
+### 案件（Project） UI/REST
+
+- 一覧: `/projects`
+- 新規作成: `/projects/new`
+- 編集: `/projects/{id}/edit`
+- 削除: POST `/projects/{id}/delete`
+
+現状は Web 画面による CRUD を提供しています。REST API は未実装ですが、`ProjectService` を利用して容易に拡張可能です。
 
 ---
 
@@ -174,6 +207,8 @@ POST/PUT のリクエスト JSON 例:
 - 学生登録フォーム: `http://localhost:8080/students/new`
 - 成績一覧（学生 ID 指定）: `http://localhost:8080/students/{studentId}/records/list`
 - 成績登録フォーム: `http://localhost:8080/students/{studentId}/records/new`
+- 案件一覧: `http://localhost:8080/projects`
+- ユーザー一覧（管理者のみ）: `http://localhost:8080/admin/users`
 
 フォーム送信後は一覧にリダイレクトされます。
 
@@ -198,6 +233,15 @@ POST/PUT のリクエスト JSON 例:
 ```
 
 起動後は `http://localhost:8080` にアクセスしてください。既に 8080 番ポートを使用している場合は、該当プロセスを停止するか `application.properties` に `server.port` を指定して別ポートで起動します。
+
+---
+
+## ログイン情報（サンプル）
+
+- ユーザー名: `admin`
+- パスワード: `admin123`
+
+初回起動時に `DataInitializer` が自動作成します。パスワードは `BCrypt` で保存されるため、運用時は速やかに変更してください。
 
 ---
 
