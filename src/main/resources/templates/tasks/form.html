@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${isNew} ? 'タスク新規作成' : 'タスク編集'"></title>
+</head>
+<body>
+<h1 th:text="${isNew} ? 'タスク新規作成' : 'タスク編集'"></h1>
+
+<form th:action="${isNew} ? @{/projects/{projectId}/tasks(projectId=${taskForm.projectId})} : @{/projects/{projectId}/tasks/{taskId}(projectId=${taskForm.projectId}, taskId=${taskForm.taskId})}"
+      th:object="${taskForm}" method="post">
+
+    <input type="hidden" th:field="*{projectId}" />
+    <input type="hidden" th:field="*{taskId}" />
+
+    <div>
+        <label for="title">タイトル</label>
+        <input id="title" type="text" th:field="*{title}" required />
+        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+    </div>
+
+    <div>
+        <label for="assigneeId">担当者</label>
+        <select id="assigneeId" th:field="*{assigneeId}">
+            <option value="">--未割り当て--</option>
+            <option th:each="user : ${assignees}" th:value="${user.userId}" th:text="${user.username}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label for="status">ステータス</label>
+        <select id="status" th:field="*{status}">
+            <option value="">--選択--</option>
+            <option th:each="status : ${taskStatuses}" th:value="${status}" th:text="${status}"></option>
+        </select>
+        <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+    </div>
+
+    <div>
+        <label for="dueDate">期限</label>
+        <input id="dueDate" type="date" th:field="*{dueDate}" />
+    </div>
+
+    <div>
+        <label for="progressPercent">進捗(%)</label>
+        <input id="progressPercent" type="number" min="0" max="100" th:field="*{progressPercent}" />
+    </div>
+
+    <div>
+        <label for="detail">詳細</label>
+        <textarea id="detail" rows="5" cols="40" th:field="*{detail}"></textarea>
+    </div>
+
+    <button type="submit" th:text="${isNew} ? '登録' : '更新'"></button>
+</form>
+
+<p>
+    <a th:href="@{/projects/{id}/tasks(id=${taskForm.projectId})}">タスク一覧へ戻る</a>
+</p>
+</body>
+</html>

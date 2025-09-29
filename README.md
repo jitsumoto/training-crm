@@ -38,36 +38,49 @@ training-crm/
 │   │   │   ├── DataInitializer.java
 │   │   │   └── SecurityConfig.java
 │   │   ├── controller/
+│   │   │   ├── ActivityController.java
 │   │   │   ├── AuthController.java
-│   │   │   ├── ProjectController.java      # 案件画面
-│   │   │   ├── RecordController.java       # 成績 REST API
-│   │   │   ├── RecordWebController.java    # 成績画面
-│   │   │   ├── StudentController.java      # 学生 REST API
-│   │   │   ├── StudentWebController.java   # 学生画面
-│   │   │   └── UserController.java         # 管理者向けユーザー画面
+│   │   │   ├── ProjectController.java
+│   │   │   ├── RecordController.java
+│   │   │   ├── RecordWebController.java
+│   │   │   ├── StudentController.java
+│   │   │   ├── StudentWebController.java
+│   │   │   ├── TaskController.java
+│   │   │   └── UserController.java
 │   │   ├── dto/
+│   │   │   ├── ActivityForm.java
 │   │   │   ├── ProjectForm.java
+│   │   │   ├── TaskForm.java
 │   │   │   └── UserForm.java
 │   │   ├── entity/
+│   │   │   ├── Activity.java
 │   │   │   ├── Project.java
 │   │   │   ├── Record.java
 │   │   │   ├── Student.java
+│   │   │   ├── Task.java
 │   │   │   └── User.java
 │   │   ├── repository/
+│   │   │   ├── ActivityRepository.java
 │   │   │   ├── ProjectRepository.java
 │   │   │   ├── RecordRepository.java
 │   │   │   ├── StudentRepository.java
+│   │   │   ├── TaskRepository.java
 │   │   │   └── UserRepository.java
 │   │   └── service/
+│   │       ├── ActivityService.java
 │   │       ├── CustomUserDetailsService.java
 │   │       ├── ProjectService.java
 │   │       ├── RecordService.java
 │   │       ├── StudentService.java
+│   │       ├── TaskService.java
 │   │       └── UserService.java
 │   └── main/resources/
 │       ├── application.properties
 │       ├── templates/
 │       │   ├── login.html
+│       │   ├── activities/
+│       │   │   ├── form.html
+│       │   │   └── list.html
 │       │   ├── projects/
 │       │   │   ├── form.html
 │       │   │   └── list.html
@@ -75,6 +88,9 @@ training-crm/
 │       │   │   ├── form.html
 │       │   │   └── list.html
 │       │   ├── students/
+│       │   │   ├── form.html
+│       │   │   └── list.html
+│       │   ├── tasks/
 │       │   │   ├── form.html
 │       │   │   └── list.html
 │       │   └── users/
@@ -123,14 +139,12 @@ POST/PUT のリクエスト JSON 例:
 
 ---
 
-### 案件（Project） UI/REST
+### 案件（Project） UI
 
 - 一覧: `/projects`
 - 新規作成: `/projects/new`
 - 編集: `/projects/{id}/edit`
 - 削除: POST `/projects/{id}/delete`
-
-現状は Web 画面による CRUD を提供しています。REST API は未実装ですが、`ProjectService` を利用して容易に拡張可能です。
 
 ---
 

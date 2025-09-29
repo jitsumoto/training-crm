@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${task.title} + ' の活動ログ'"></title>
+</head>
+<body>
+<h1 th:text="${task.title} + ' の活動ログ'"></h1>
+
+<div th:if="${successMessage}">
+    <p th:text="${successMessage}"></p>
+</div>
+
+<p>
+    <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities/new(projectId=${project.projectId}, taskId=${task.taskId})}">活動を追加</a>
+</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <thead>
+    <tr>
+        <th>日時</th>
+        <th>種別</th>
+        <th>場所</th>
+        <th>内容</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="activity : ${activities}">
+        <td th:text="${#temporals.format(activity.activityAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${activity.activityType}"></td>
+        <td th:text="${activity.location}"></td>
+        <td th:text="${activity.description}"></td>
+        <td>
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/edit(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}">編集</a>
+            |
+            <form th:action="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/delete(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}"
+                  method="post" style="display:inline">
+                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(activities)}">
+        <td colspan="5">活動ログは登録されていません。</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/projects/{id}/tasks(id=${project.projectId})}">タスク一覧へ戻る</a>
+</p>
+</body>
+</html>

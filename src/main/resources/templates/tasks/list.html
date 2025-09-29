@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${project.name} + ' のタスク一覧'"></title>
+</head>
+<body>
+<h1 th:text="${project.name} + ' のタスク一覧'"></h1>
+
+<div th:if="${successMessage}">
+    <p th:text="${successMessage}"></p>
+</div>
+
+<p>
+    <a th:href="@{/projects/{id}/tasks/new(id=${project.projectId})}">タスク新規作成</a>
+</p>
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>タイトル</th>
+        <th>担当者</th>
+        <th>ステータス</th>
+        <th>期限</th>
+        <th>進捗(%)</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.taskId}"></td>
+        <td th:text="${task.title}"></td>
+        <td th:text="${task.assignee != null ? task.assignee.username : '-'}"></td>
+        <td th:text="${task.status}"></td>
+        <td th:text="${task.dueDate}"></td>
+        <td th:text="${task.progressPercent != null ? task.progressPercent : '-'}"></td>
+        <td>
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}/edit(projectId=${project.projectId}, taskId=${task.taskId})}">編集</a>
+            |
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">活動ログ</a>
+            |
+            <form th:action="@{/projects/{projectId}/tasks/{taskId}/delete(projectId=${project.projectId}, taskId=${task.taskId})}"
+                  method="post" style="display:inline">
+                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(tasks)}">
+        <td colspan="7">タスクは登録されていません。</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/projects}">案件一覧へ戻る</a>
+</p>
+</body>
+</html>
