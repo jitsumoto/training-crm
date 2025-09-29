@@ -39,6 +39,8 @@
         </td>
         <td th:text="${project.budget != null ? #numbers.formatDecimal(project.budget, 1, 'COMMA', 2, 'POINT') : '-'}"></td>
         <td>
+            <a th:href="@{/projects/{projectId}/tasks(projectId=${project.projectId})}">タスク一覧</a>
+            |
             <a th:href="@{/projects/{id}/edit(id=${project.projectId})}">編集</a>
             |
             <form th:action="@{/projects/{id}/delete(id=${project.projectId})}" method="post" style="display:inline">

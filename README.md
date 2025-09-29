@@ -10,7 +10,7 @@
 - 学生情報（名前・メール・電話・クラス）の CRUD
 - 学生と成績レコード（Record）の 1:N 関連管理
 - `/students` / `/projects` を軸にした REST + 画面 UI
-- Thymeleaf テンプレートによる学生・成績・案件・ユーザー管理の CRUD 画面
+- Thymeleaf テンプレートによる学生・成績・案件・タスク・活動・ユーザー管理の CRUD 画面
 - Spring Security（フォームログイン & HTTP Basic）、BCrypt ハッシュ済み管理者アカウントを同梱
 
 ---
@@ -134,6 +134,15 @@ POST/PUT のリクエスト JSON 例:
 
 ---
 
+### タスク / 活動 UI
+
+- タスク一覧: `/projects/{projectId}/tasks`
+- タスク作成: `/projects/{projectId}/tasks/new`
+- 活動一覧: `/projects/{projectId}/tasks/{taskId}/activities`
+- 活動登録: `/projects/{projectId}/tasks/{taskId}/activities/new`
+
+---
+
 ## Salesforce との概念対応
 
 | アプリ機能               | Java / PostgreSQL テーブル | Salesforce の概念             | 説明                                               |
@@ -208,6 +217,8 @@ POST/PUT のリクエスト JSON 例:
 - 成績一覧（学生 ID 指定）: `http://localhost:8080/students/{studentId}/records/list`
 - 成績登録フォーム: `http://localhost:8080/students/{studentId}/records/new`
 - 案件一覧: `http://localhost:8080/projects`
+- タスク一覧: `http://localhost:8080/projects/{projectId}/tasks`
+- 活動一覧: `http://localhost:8080/projects/{projectId}/tasks/{taskId}/activities`
 - ユーザー一覧（管理者のみ）: `http://localhost:8080/admin/users`
 
 フォーム送信後は一覧にリダイレクトされます。
