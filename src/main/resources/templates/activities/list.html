@@ -1,53 +1,75 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${task.title} + ' の活動ログ'"></title>
-</head>
-<body>
-<h1 th:text="${task.title} + ' の活動ログ'"></h1>
-
-<div th:if="${successMessage}">
-    <p th:text="${successMessage}"></p>
+<head th:replace="fragments/layout :: head('活動ログ')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('tasks')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-logging" title="activities">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#logging"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${task.title} + ' の活動ログ'"></h2>
+                        <p class="slds-text-body_small" th:text="${project.name}"></p>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <a class="slds-button slds-button_neutral"
+                       th:href="@{/projects/{id}/tasks(id=${project.projectId})}">タスク一覧</a>
+                    <a class="slds-button slds-button_brand"
+                       th:href="@{/projects/{projectId}/tasks/{taskId}/activities/new(projectId=${project.projectId}, taskId=${task.taskId})}">活動を追加</a>
+                </div>
+            </div>
+            <div class="slds-card__body">
+                <div th:if="${successMessage}" class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <h2 th:text="${successMessage}"></h2>
+                </div>
+                <div class="slds-table_header-fixed_container slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate">日時</div></th>
+                            <th scope="col"><div class="slds-truncate">種別</div></th>
+                            <th scope="col"><div class="slds-truncate">場所</div></th>
+                            <th scope="col"><div class="slds-truncate">内容</div></th>
+                            <th scope="col"><div class="slds-truncate">操作</div></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="activity : ${activities}" class="slds-hint-parent">
+                            <td th:text="${#temporals.format(activity.activityAt, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td><span class="slds-badge" th:text="${activity.activityType != null ? activity.activityType : '-'}"></span></td>
+                            <td th:text="${activity.location != null ? activity.location : '-'}"></td>
+                            <td th:text="${activity.description}"></td>
+                            <td>
+                                <div class="slds-button-group" role="group">
+                                    <a class="slds-button slds-button_neutral"
+                                       th:href="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/edit(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}">編集</a>
+                                    <form th:action="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/delete(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}"
+                                          method="post" style="display:inline">
+                                        <button class="slds-button slds-button_outline-brand" type="submit"
+                                                onclick="return confirm('削除しますか？');">削除</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(activities)}">
+                            <td colspan="5">活動ログは登録されていません。</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-
-<p>
-    <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities/new(projectId=${project.projectId}, taskId=${task.taskId})}">活動を追加</a>
-</p>
-
-<table border="1" cellpadding="4" cellspacing="0">
-    <thead>
-    <tr>
-        <th>日時</th>
-        <th>種別</th>
-        <th>場所</th>
-        <th>内容</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="activity : ${activities}">
-        <td th:text="${#temporals.format(activity.activityAt, 'yyyy-MM-dd HH:mm')}"></td>
-        <td th:text="${activity.activityType}"></td>
-        <td th:text="${activity.location}"></td>
-        <td th:text="${activity.description}"></td>
-        <td>
-            <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/edit(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}">編集</a>
-            |
-            <form th:action="@{/projects/{projectId}/tasks/{taskId}/activities/{activityId}/delete(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activity.activityId})}"
-                  method="post" style="display:inline">
-                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
-            </form>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(activities)}">
-        <td colspan="5">活動ログは登録されていません。</td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/projects/{id}/tasks(id=${project.projectId})}">タスク一覧へ戻る</a>
-</p>
 </body>
 </html>

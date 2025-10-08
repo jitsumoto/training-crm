@@ -1,59 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${project.name} + ' のタスク一覧'"></title>
-</head>
-<body>
-<h1 th:text="${project.name} + ' のタスク一覧'"></h1>
-
-<div th:if="${successMessage}">
-    <p th:text="${successMessage}"></p>
+<head th:replace="fragments/layout :: head(${project.name} + ' のタスク一覧')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('tasks')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-task" title="tasks">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#task"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${project.name} + ' のタスク一覧'"></h2>
+                        <p class="slds-text-body_small">案件に紐づくタスクを Salesforce 風に表示します。</p>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <a class="slds-button slds-button_neutral" th:href="@{/projects}">案件一覧</a>
+                    <a class="slds-button slds-button_brand" th:href="@{/projects/{id}/tasks/new(id=${project.projectId})}">タスク新規作成</a>
+                </div>
+            </div>
+            <div class="slds-card__body">
+                <div th:if="${successMessage}" class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <h2 th:text="${successMessage}"></h2>
+                </div>
+                <div class="slds-table_header-fixed_container slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate">ID</div></th>
+                            <th scope="col"><div class="slds-truncate">タイトル</div></th>
+                            <th scope="col"><div class="slds-truncate">担当者</div></th>
+                            <th scope="col"><div class="slds-truncate">ステータス</div></th>
+                            <th scope="col"><div class="slds-truncate">期限</div></th>
+                            <th scope="col"><div class="slds-truncate">進捗(%)</div></th>
+                            <th scope="col"><div class="slds-truncate">操作</div></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="task : ${tasks}" class="slds-hint-parent">
+                            <td th:text="${task.taskId}"></td>
+                            <td th:text="${task.title}"></td>
+                            <td th:text="${task.assignee != null ? task.assignee.username : '-'}"></td>
+                            <td><span class="slds-badge" th:text="${task.status}"></span></td>
+                            <td th:text="${task.dueDate}"></td>
+                            <td th:text="${task.progressPercent != null ? task.progressPercent : '-'}"></td>
+                            <td>
+                                <div class="slds-button-group" role="group">
+                                    <a class="slds-button slds-button_neutral"
+                                       th:href="@{/projects/{projectId}/tasks/{taskId}/edit(projectId=${project.projectId}, taskId=${task.taskId})}">編集</a>
+                                    <a class="slds-button slds-button_neutral"
+                                       th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">活動</a>
+                                    <form th:action="@{/projects/{projectId}/tasks/{taskId}/delete(projectId=${project.projectId}, taskId=${task.taskId})}"
+                                          method="post" style="display:inline">
+                                        <button class="slds-button slds-button_outline-brand" type="submit"
+                                                onclick="return confirm('削除しますか？');">削除</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(tasks)}">
+                            <td colspan="7">タスクは登録されていません。</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-
-<p>
-    <a th:href="@{/projects/{id}/tasks/new(id=${project.projectId})}">タスク新規作成</a>
-</p>
-
-<table border="1" cellpadding="4" cellspacing="0">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>タイトル</th>
-        <th>担当者</th>
-        <th>ステータス</th>
-        <th>期限</th>
-        <th>進捗(%)</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="task : ${tasks}">
-        <td th:text="${task.taskId}"></td>
-        <td th:text="${task.title}"></td>
-        <td th:text="${task.assignee != null ? task.assignee.username : '-'}"></td>
-        <td th:text="${task.status}"></td>
-        <td th:text="${task.dueDate}"></td>
-        <td th:text="${task.progressPercent != null ? task.progressPercent : '-'}"></td>
-        <td>
-            <a th:href="@{/projects/{projectId}/tasks/{taskId}/edit(projectId=${project.projectId}, taskId=${task.taskId})}">編集</a>
-            |
-            <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">活動ログ</a>
-            |
-            <form th:action="@{/projects/{projectId}/tasks/{taskId}/delete(projectId=${project.projectId}, taskId=${task.taskId})}"
-                  method="post" style="display:inline">
-                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
-            </form>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(tasks)}">
-        <td colspan="7">タスクは登録されていません。</td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/projects}">案件一覧へ戻る</a>
-</p>
 </body>
 </html>

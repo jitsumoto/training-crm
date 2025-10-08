@@ -1,54 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${isNew} ? 'ユーザー新規作成' : 'ユーザー編集'"></title>
-</head>
-<body>
-<h1 th:text="${isNew} ? 'ユーザー新規作成' : 'ユーザー編集'"></h1>
+<head th:replace="fragments/layout :: head(${isNew} ? 'ユーザー新規作成' : 'ユーザー編集')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('users')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-user" title="user form">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#user"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${isNew} ? 'ユーザー新規作成' : 'ユーザー編集'"></h2>
+                        <p class="slds-text-body_small">ログインアカウントの設定を行います。</p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_neutral" th:href="@{/admin/users}">ユーザー一覧へ戻る</a>
+            </div>
+            <div class="slds-card__body">
+                <form th:action="${isNew} ? @{/admin/users} : @{/admin/users/{id}(id=${userForm.userId})}"
+                      th:object="${userForm}" method="post" class="slds-form slds-form_compound">
 
-<form th:action="${isNew} ? @{/admin/users} : @{/admin/users/{id}(id=${userForm.userId})}"
-      th:object="${userForm}" method="post">
+                    <input type="hidden" th:field="*{userId}" />
 
-    <input type="hidden" th:field="*{userId}" />
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="user-username">ユーザー名</label>
+                                <div class="slds-form-element__control">
+                                    <input id="user-username" class="slds-input" type="text" th:field="*{username}" required />
+                                    <div class="slds-form-element__help" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="user-email">メールアドレス</label>
+                                <div class="slds-form-element__control">
+                                    <input id="user-email" class="slds-input" type="email" th:field="*{email}" />
+                                    <div class="slds-form-element__help" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="username">ユーザー名</label>
-        <input id="username" type="text" th:field="*{username}" required />
-        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="user-role">ロール</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select id="user-role" class="slds-select" th:field="*{role}" required>
+                                            <option value="">--選択--</option>
+                                            <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__help" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <span class="slds-form-element__label">有効</span>
+                                <div class="slds-form-element__control">
+                                    <label class="slds-checkbox">
+                                        <input type="checkbox" th:field="*{enabled}" />
+                                        <span class="slds-checkbox_faux"></span>
+                                        <span class="slds-form-element__label">ログインを許可</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="email">メールアドレス</label>
-        <input id="email" type="email" th:field="*{email}" />
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-    </div>
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label" for="user-password" th:text="${isNew} ? 'パスワード' : 'パスワード（変更時のみ入力）'"></label>
+                        <div class="slds-form-element__control">
+                            <input id="user-password" class="slds-input" type="password" th:field="*{password}" />
+                            <div class="slds-form-element__help" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="role">ロール</label>
-        <select id="role" th:field="*{role}">
-            <option value="">--選択--</option>
-            <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"></option>
-        </select>
-        <div th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
-    </div>
-
-    <div>
-        <label for="enabled">有効</label>
-        <input id="enabled" type="checkbox" th:field="*{enabled}" />
-    </div>
-
-    <div>
-        <label for="password" th:text="${isNew} ? 'パスワード' : 'パスワード（変更時のみ入力）'"></label>
-        <input id="password" type="password" th:field="*{password}" />
-        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-    </div>
-
-    <button type="submit" th:text="${isNew} ? '作成' : '更新'"></button>
-</form>
-
-<p>
-    <a th:href="@{/admin/users}">ユーザー一覧へ戻る</a>
-</p>
+                    <div class="slds-m-top_large">
+                        <button class="slds-button slds-button_brand" type="submit" th:text="${isNew} ? '作成' : '更新'"></button>
+                        <a class="slds-button slds-button_neutral" th:href="@{/admin/users}">キャンセル</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

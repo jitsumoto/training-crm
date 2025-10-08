@@ -1,50 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${isNew} ? '活動登録' : '活動編集'"></title>
-</head>
-<body>
-<h1 th:text="${isNew} ? '活動登録' : '活動編集'"></h1>
+<head th:replace="fragments/layout :: head(${isNew} ? '活動登録' : '活動編集')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('tasks')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-logging" title="activity form">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#logging"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${isNew} ? '活動登録' : '活動編集'"></h2>
+                        <p class="slds-text-body_small" th:text="${task.title} + ' / ' + ${project.name}"></p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_neutral"
+                   th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">活動一覧へ戻る</a>
+            </div>
+            <div class="slds-card__body">
+                <form th:action="${isNew}
+                        ? @{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}
+                        : @{/projects/{projectId}/tasks/{taskId}/activities/{activityId}(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activityForm.activityId})}"
+                      method="post" th:object="${activityForm}" class="slds-form slds-form_compound">
 
-<form th:action="${isNew}
-        ? @{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}
-        : @{/projects/{projectId}/tasks/{taskId}/activities/{activityId}(projectId=${project.projectId}, taskId=${task.taskId}, activityId=${activityForm.activityId})}"
-      method="post" th:object="${activityForm}">
+                    <input type="hidden" th:field="*{activityId}" />
+                    <input type="hidden" th:field="*{taskId}" />
 
-    <input type="hidden" th:field="*{activityId}" />
-    <input type="hidden" th:field="*{taskId}" />
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="activity-at">日時</label>
+                                <div class="slds-form-element__control">
+                                    <input id="activity-at" class="slds-input" type="datetime-local" th:field="*{activityAt}" required />
+                                    <div class="slds-form-element__help" th:if="${#fields.hasErrors('activityAt')}" th:errors="*{activityAt}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="activity-type">種別</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select id="activity-type" class="slds-select" th:field="*{activityType}">
+                                            <option value="">--選択--</option>
+                                            <option th:each="type : ${activityTypes}" th:value="${type}" th:text="${type}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="activityAt">日時</label>
-        <input id="activityAt" type="datetime-local" th:field="*{activityAt}" required />
-        <div th:if="${#fields.hasErrors('activityAt')}" th:errors="*{activityAt}"></div>
-    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="activity-location">場所</label>
+                                <div class="slds-form-element__control">
+                                    <input id="activity-location" class="slds-input" type="text" th:field="*{location}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="activity-description">内容</label>
+                                <div class="slds-form-element__control">
+                                    <textarea id="activity-description" class="slds-textarea" rows="4" th:field="*{description}" required></textarea>
+                                    <div class="slds-form-element__help" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="activityType">種別</label>
-        <select id="activityType" th:field="*{activityType}">
-            <option value="">--選択--</option>
-            <option th:each="type : ${activityTypes}" th:value="${type}" th:text="${type}"></option>
-        </select>
-    </div>
-
-    <div>
-        <label for="location">場所</label>
-        <input id="location" type="text" th:field="*{location}" />
-    </div>
-
-    <div>
-        <label for="description">内容</label>
-        <textarea id="description" rows="5" cols="40" th:field="*{description}" required></textarea>
-        <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-    </div>
-
-    <button type="submit" th:text="${isNew} ? '登録' : '更新'"></button>
-</form>
-
-<p>
-    <a th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">活動一覧へ戻る</a>
-</p>
+                    <div class="slds-m-top_large">
+                        <button class="slds-button slds-button_brand" type="submit" th:text="${isNew} ? '登録' : '更新'"></button>
+                        <a class="slds-button slds-button_neutral"
+                           th:href="@{/projects/{projectId}/tasks/{taskId}/activities(projectId=${project.projectId}, taskId=${task.taskId})}">キャンセル</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

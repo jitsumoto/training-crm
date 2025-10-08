@@ -1,51 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>ユーザー管理</title>
-</head>
-<body>
-<h1>ユーザー一覧</h1>
-
-<div th:if="${successMessage}">
-    <p th:text="${successMessage}"></p>
+<head th:replace="fragments/layout :: head('ユーザー管理')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('users')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-user" title="users">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#user"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">ユーザー管理</h2>
+                        <p class="slds-text-body_small">管理者・スタッフのアカウント設定を行います。</p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_brand" th:href="@{/admin/users/new}">新規ユーザー作成</a>
+            </div>
+            <div class="slds-card__body">
+                <div th:if="${successMessage}" class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <h2 th:text="${successMessage}"></h2>
+                </div>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col"><div class="slds-truncate">ID</div></th>
+                        <th scope="col"><div class="slds-truncate">ユーザー名</div></th>
+                        <th scope="col"><div class="slds-truncate">メールアドレス</div></th>
+                        <th scope="col"><div class="slds-truncate">ロール</div></th>
+                        <th scope="col"><div class="slds-truncate">有効</div></th>
+                        <th scope="col"><div class="slds-truncate">操作</div></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}" class="slds-hint-parent">
+                        <td th:text="${user.userId}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td><span class="slds-badge" th:text="${user.role}"></span></td>
+                        <td>
+                            <span class="slds-badge" th:text="${user.enabled} ? '有効' : '無効'"
+                                  th:classappend="${user.enabled} ? ' slds-theme_success' : ' slds-theme_warning'"></span>
+                        </td>
+                        <td>
+                            <div class="slds-button-group" role="group">
+                                <a class="slds-button slds-button_neutral" th:href="@{/admin/users/{id}/edit(id=${user.userId})}">編集</a>
+                                <form th:action="@{/admin/users/{id}/delete(id=${user.userId})}" method="post" style="display:inline">
+                                    <button class="slds-button slds-button_outline-brand" type="submit"
+                                            onclick="return confirm('削除しますか？');">削除</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="6">ユーザーは登録されていません。</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
-
-<p>
-    <a th:href="@{/admin/users/new}">新規ユーザー作成</a>
-</p>
-
-<table border="1" cellpadding="4" cellspacing="0">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>ユーザー名</th>
-        <th>メールアドレス</th>
-        <th>ロール</th>
-        <th>有効</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.userId}"></td>
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.role}"></td>
-        <td th:text="${user.enabled} ? '有効' : '無効'"></td>
-        <td>
-            <a th:href="@{/admin/users/{id}/edit(id=${user.userId})}">編集</a>
-            |
-            <form th:action="@{/admin/users/{id}/delete(id=${user.userId})}" method="post" style="display:inline">
-                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/students/list}">学生一覧へ戻る</a>
-</p>
 </body>
 </html>

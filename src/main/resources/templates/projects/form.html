@@ -1,63 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${isNew} ? '案件新規登録' : '案件編集'"></title>
-</head>
-<body>
-<h1 th:text="${isNew} ? '案件新規登録' : '案件編集'"></h1>
+<head th:replace="fragments/layout :: head(${isNew} ? '案件新規登録' : '案件編集')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('projects')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="project form">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#opportunity"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${isNew} ? '案件新規登録' : '案件編集'"></h2>
+                        <p class="slds-text-body_small">案件の基本情報とステータスを設定してください。</p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_neutral" th:href="@{/projects}">案件一覧へ戻る</a>
+            </div>
+            <div class="slds-card__body">
+                <form th:action="${isNew} ? @{/projects} : @{/projects/{id}(id=${projectForm.projectId})}"
+                      th:object="${projectForm}" method="post" class="slds-form slds-form_compound">
 
-<form th:action="${isNew} ? @{/projects} : @{/projects/{id}(id=${projectForm.projectId})}"
-      th:object="${projectForm}" method="post">
+                    <input type="hidden" th:field="*{projectId}" />
 
-    <input type="hidden" th:field="*{projectId}" />
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label" for="project-name">案件名</label>
+                        <div class="slds-form-element__control">
+                            <input id="project-name" class="slds-input" type="text" th:field="*{name}" required />
+                            <div class="slds-form-element__help" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="name">案件名</label>
-        <input id="name" type="text" th:field="*{name}" required />
-        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-    </div>
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label" for="project-client">自治体 / クライアント</label>
+                        <div class="slds-form-element__control">
+                            <input id="project-client" class="slds-input" type="text" th:field="*{clientName}" required />
+                            <div class="slds-form-element__help" th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="clientName">自治体 / クライアント</label>
-        <input id="clientName" type="text" th:field="*{clientName}" required />
-        <div th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></div>
-    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="project-status">ステータス</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select id="project-status" class="slds-select" th:field="*{status}" required>
+                                            <option value="">--選択--</option>
+                                            <option th:each="status : ${projectStatuses}" th:value="${status}" th:text="${status}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element__help" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="project-start">開始日</label>
+                                <div class="slds-form-element__control">
+                                    <input id="project-start" class="slds-input" type="date" th:field="*{startDate}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="project-end">終了日</label>
+                                <div class="slds-form-element__control">
+                                    <input id="project-end" class="slds-input" type="date" th:field="*{endDate}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="status">ステータス</label>
-        <select id="status" th:field="*{status}">
-            <option value="">--選択--</option>
-            <option th:each="status : ${projectStatuses}" th:value="${status}" th:text="${status}"></option>
-        </select>
-        <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
-    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="project-budget">予算</label>
+                                <div class="slds-form-element__control">
+                                    <input id="project-budget" class="slds-input" type="number" step="0.01" min="0" th:field="*{budget}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="project-description">概要</label>
+                                <div class="slds-form-element__control">
+                                    <textarea id="project-description" class="slds-textarea" rows="4" th:field="*{description}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div>
-        <label for="startDate">開始日</label>
-        <input id="startDate" type="date" th:field="*{startDate}" />
-    </div>
-
-    <div>
-        <label for="endDate">終了日</label>
-        <input id="endDate" type="date" th:field="*{endDate}" />
-    </div>
-
-    <div>
-        <label for="budget">予算</label>
-        <input id="budget" type="number" step="0.01" th:field="*{budget}" />
-    </div>
-
-    <div>
-        <label for="description">概要</label>
-        <textarea id="description" rows="5" cols="40" th:field="*{description}"></textarea>
-    </div>
-
-    <button type="submit" th:text="${isNew} ? '登録' : '更新'"></button>
-</form>
-
-<p>
-    <a th:href="@{/projects}">案件一覧へ戻る</a>
-</p>
+                    <div class="slds-m-top_large">
+                        <button class="slds-button slds-button_brand" type="submit" th:text="${isNew} ? '登録' : '更新'"></button>
+                        <a class="slds-button slds-button_neutral" th:href="@{/projects}">キャンセル</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

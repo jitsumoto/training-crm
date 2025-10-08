@@ -1,61 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>案件一覧</title>
-</head>
-<body>
-<h1>案件一覧</h1>
-
-<div th:if="${successMessage}">
-    <p th:text="${successMessage}"></p>
+<head th:replace="fragments/layout :: head('案件一覧')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('projects')"></div>
+    <main class="app-main slds-p-around_medium">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="projects">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#opportunity"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">案件一覧</h2>
+                        <p class="slds-text-body_small">自治体案件・施設開発案件を一覧表示します。</p>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <a class="slds-button slds-button_neutral" th:href="@{/students/list}">学生一覧</a>
+                    <a class="slds-button slds-button_brand" th:href="@{/projects/new}">新規案件登録</a>
+                </div>
+            </div>
+            <div class="slds-card__body">
+                <div th:if="${successMessage}" class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <h2 th:text="${successMessage}"></h2>
+                </div>
+                <div class="slds-table_header-fixed_container slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate">ID</div></th>
+                            <th scope="col"><div class="slds-truncate">案件名</div></th>
+                            <th scope="col"><div class="slds-truncate">自治体 / クライアント</div></th>
+                            <th scope="col"><div class="slds-truncate">ステータス</div></th>
+                            <th scope="col"><div class="slds-truncate">期間</div></th>
+                            <th scope="col"><div class="slds-truncate">予算</div></th>
+                            <th scope="col"><div class="slds-truncate">操作</div></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="project : ${projects}" class="slds-hint-parent">
+                            <td th:text="${project.projectId}"></td>
+                            <td th:text="${project.name}"></td>
+                            <td th:text="${project.clientName}"></td>
+                            <td><span class="slds-badge" th:text="${project.status}"></span></td>
+                            <td>
+                                <span th:text="${project.startDate}"></span>
+                                <span th:text="${project.endDate != null ? '〜 ' + project.endDate : ''}"></span>
+                            </td>
+                            <td th:text="${project.budget != null ? #numbers.formatDecimal(project.budget, 1, 'COMMA', 2, 'POINT') : '-'}"></td>
+                            <td>
+                                <div class="slds-button-group" role="group">
+                                    <a class="slds-button slds-button_neutral"
+                                       th:href="@{/projects/{projectId}/tasks(projectId=${project.projectId})}">タスク</a>
+                                    <a class="slds-button slds-button_neutral"
+                                       th:href="@{/projects/{id}/edit(id=${project.projectId})}">編集</a>
+                                    <form th:action="@{/projects/{id}/delete(id=${project.projectId})}" method="post" style="display:inline">
+                                        <button class="slds-button slds-button_outline-brand" type="submit"
+                                                onclick="return confirm('削除しますか？');">削除</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(projects)}">
+                            <td colspan="7">案件は登録されていません。</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
-
-<p>
-    <a th:href="@{/projects/new}">新規案件登録</a>
-</p>
-
-<table border="1" cellpadding="4" cellspacing="0">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>案件名</th>
-        <th>自治体 / クライアント</th>
-        <th>ステータス</th>
-        <th>期間</th>
-        <th>予算</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="project : ${projects}">
-        <td th:text="${project.projectId}"></td>
-        <td th:text="${project.name}"></td>
-        <td th:text="${project.clientName}"></td>
-        <td th:text="${project.status}"></td>
-        <td>
-            <span th:text="${project.startDate}"></span>
-            <span th:text="${project.endDate != null ? '〜 ' + project.endDate : ''}"></span>
-        </td>
-        <td th:text="${project.budget != null ? #numbers.formatDecimal(project.budget, 1, 'COMMA', 2, 'POINT') : '-'}"></td>
-        <td>
-            <a th:href="@{/projects/{projectId}/tasks(projectId=${project.projectId})}">タスク一覧</a>
-            |
-            <a th:href="@{/projects/{id}/edit(id=${project.projectId})}">編集</a>
-            |
-            <form th:action="@{/projects/{id}/delete(id=${project.projectId})}" method="post" style="display:inline">
-                <button type="submit" onclick="return confirm('削除しますか？');">削除</button>
-            </form>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(projects)}">
-        <td colspan="7">案件は登録されていません。</td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/students/list}">学生一覧へ戻る</a>
-</p>
 </body>
 </html>

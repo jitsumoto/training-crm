@@ -46,7 +46,6 @@ public class TaskController {
 
     @GetMapping
     public String list(@PathVariable Long projectId, Model model) {
-    	
         Project project = projectService.findById(projectId);
         List<Task> tasks = taskService.findByProject(projectId);
         model.addAttribute("project", project);
@@ -58,8 +57,10 @@ public class TaskController {
     public String newTask(@PathVariable Long projectId, Model model) {
         TaskForm form = new TaskForm();
         form.setProjectId(projectId);
+        Project project = projectService.findById(projectId);
         model.addAttribute("taskForm", form);
         model.addAttribute("isNew", true);
+        model.addAttribute("project", project);
         return "tasks/form";
     }
 
@@ -70,8 +71,10 @@ public class TaskController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         taskForm.setProjectId(projectId);
+        Project project = projectService.findById(projectId);
         if (bindingResult.hasErrors()) {
             model.addAttribute("isNew", true);
+            model.addAttribute("project", project);
             return "tasks/form";
         }
         taskService.create(taskForm);
@@ -95,6 +98,7 @@ public class TaskController {
         form.setProgressPercent(task.getProgressPercent());
         model.addAttribute("taskForm", form);
         model.addAttribute("isNew", false);
+        model.addAttribute("project", projectService.findById(projectId));
         return "tasks/form";
     }
 
@@ -106,8 +110,10 @@ public class TaskController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         taskForm.setProjectId(projectId);
+        Project project = projectService.findById(projectId);
         if (bindingResult.hasErrors()) {
             model.addAttribute("isNew", false);
+            model.addAttribute("project", project);
             return "tasks/form";
         }
         taskService.update(taskId, taskForm);
