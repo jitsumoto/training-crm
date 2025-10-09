@@ -1,23 +1,68 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>学生フォーム</title>
-</head>
-<body>
-    <h1 th:text="${student.studentId} != null ? '学生編集' : '新規学生登録'"></h1>
-
-    <form th:action="@{/students/save}" th:object="${student}" method="post">
-        <input type="hidden" th:field="*{studentId}"/>
-
-        名前: <input type="text" th:field="*{name}"/><br/>
-        Email: <input type="email" th:field="*{email}"/><br/>
-        電話: <input type="text" th:field="*{phone}"/><br/>
-        クラス: <input type="text" th:field="*{className}"/><br/>
-
-        <button type="submit">保存</button>
-    </form>
-
-    <a th:href="@{/students/list}">戻る</a>
+<head th:replace="fragments/layout :: head('学生フォーム')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('students')"></div>
+     <main class="app-main slds-p-horizontal_medium slds-p-vertical_small">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-contact" title="student form">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#contact"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${student.studentId} != null ? '学生編集' : '学生新規登録'"></h2>
+                        <p class="slds-text-body_small">基本情報を入力してください。</p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_neutral" th:href="@{/students/list}">学生一覧に戻る</a>
+            </div>
+            <div class="slds-card__body">
+                <form th:action="@{/students/save}" th:object="${student}" method="post" class="slds-form slds-form_compound">
+                    <input type="hidden" th:field="*{studentId}" />
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label" for="student-name">名前</label>
+                        <div class="slds-form-element__control">
+                            <input id="student-name" class="slds-input" type="text" th:field="*{name}" required />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="student-email">Email</label>
+                                <div class="slds-form-element__control">
+                                    <input id="student-email" class="slds-input" type="email" th:field="*{email}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="student-phone">電話番号</label>
+                                <div class="slds-form-element__control">
+                                    <input id="student-phone" class="slds-input" type="text" th:field="*{phone}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-m-bottom_medium">
+                        <label class="slds-form-element__label" for="student-class">クラス</label>
+                        <div class="slds-form-element__control">
+                            <input id="student-class" class="slds-input" type="text" th:field="*{className}" />
+                        </div>
+                    </div>
+                    <div class="slds-m-top_large">
+                        <button class="slds-button slds-button_brand" type="submit">保存</button>
+                        <a class="slds-button slds-button_neutral" th:href="@{/students/list}">キャンセル</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

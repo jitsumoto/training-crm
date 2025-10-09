@@ -1,21 +1,64 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>成績フォーム</title>
-</head>
-<body>
-<h1>成績フォーム</h1>
-
-<form th:action="@{/students/{studentId}/records/save(studentId=${student.studentId})}" th:object="${record}" method="post">
-    <input type="hidden" th:field="*{recordId}" />
-
-    <label>日付: <input type="date" th:field="*{testDate}" /></label><br/>
-    <label>レベル: <input type="text" th:field="*{level}" /></label><br/>
-    <label>スコア: <input type="number" th:field="*{score}" /></label><br/>
-
-    <button type="submit">保存</button>
-</form>
-
-<p><a th:href="@{/students/{id}/records/list(id=${student.studentId})}">← 成績一覧へ戻る</a></p>
+<html xmlns:th="http://www.thmeleaf.org">
+<head th:replace="fragments/layout :: head('成績フォーム')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('students')"></div>
+     <main class="app-main slds-p-horizontal_medium slds-p-vertical_small">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-score" title="record form">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#score"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${student.name} + ' の成績登録 / 編集'"></h2>
+                        <p class="slds-text-body_small">試験結果を登録してください。</p>
+                    </div>
+                </div>
+                <a class="slds-button slds-button_neutral" th:href="@{/students/{id}/records/list(id=${student.studentId})}">成績一覧へ戻る</a>
+            </div>
+            <div class="slds-card__body">
+                <form th:action="@{/students/{studentId}/records/save(studentId=${student.studentId})}" th:object="${record}" method="post" class="slds-form slds-form_compound">
+                    <input type="hidden" th:field="*{recordId}" />
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="record-date">日付</label>
+                                <div class="slds-form-element__control">
+                                    <input id="record-date" class="slds-input" type="date" th:field="*{testDate}" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="record-level">レベル</label>
+                                <div class="slds-form-element__control">
+                                    <input id="record-level" class="slds-input" type="text" th:field="*{level}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <div class="slds-form-element slds-m-bottom_medium">
+                                <label class="slds-form-element__label" for="record-score">スコア</label>
+                                <div class="slds-form-element__control">
+                                    <input id="record-score" class="slds-input" type="number" min="0" max="100" th:field="*{score}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_large">
+                        <button class="slds-button slds-button_brand" type="submit">保存</button>
+                        <a class="slds-button slds-button_neutral" th:href="@{/students/{id}/records/list(id=${student.studentId})}">キャンセル</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

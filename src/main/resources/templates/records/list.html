@@ -1,30 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title th:text="${student.name} + ' の成績一覧'"></title>
-</head>
-<body>
-<h1 th:text="${student.name} + ' の成績一覧'"></h1>
-
-<table border="1">
-    <tr>
-        <th>日付</th><th>レベル</th><th>スコア</th><th>操作</th>
-    </tr>
-    <tr th:each="record : ${records}">
-        <td th:text="${record.testDate}"></td>
-        <td th:text="${record.level}"></td>
-        <td th:text="${record.score}"></td>
-        <td>
-            <a th:href="@{/students/{studentId}/records/edit/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">編集</a> |
-            <a th:href="@{/students/{studentId}/records/delete/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">削除</a>
-        </td>
-    </tr>
-</table>
-
-<p>
-    <a th:href="@{/students/{id}/records/new(id=${student.studentId})}">新しい成績を追加</a>
-</p>
-
-<p><a th:href="@{/students/list}">← 学生一覧へ戻る</a></p>
+<head th:replace="fragments/layout :: head('成績一覧')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('students')"></div>
+     <main class="app-main slds-p-horizontal_medium slds-p-vertical_small">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-score" title="records">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#score"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title" th:text="${student.name} + ' の成績一覧'"></h2>
+                        <p class="slds-text-body_small">記録会・級認定の結果を管理します。</p>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <a class="slds-button slds-button_neutral" th:href="@{/students/list}">学生一覧</a>
+                    <a class="slds-button slds-button_brand" th:href="@{/students/{id}/records/new(id=${student.studentId})}">成績を追加</a>
+                </div>
+            </div>
+            <div class="slds-card__body">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col"><div class="slds-truncate">日付</div></th>
+                        <th scope="col"><div class="slds-truncate">レベル</div></th>
+                        <th scope="col"><div class="slds-truncate">スコア</div></th>
+                        <th scope="col"><div class="slds-truncate">操作</div></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="record : ${records}" class="slds-hint-parent">
+                        <td th:text="${record.testDate}"></td>
+                        <td th:text="${record.level}"></td>
+                        <td th:text="${record.score}"></td>
+                        <td>
+                            <div class="slds-button-group" role="group">
+                                <a class="slds-button slds-button_neutral"
+                                   th:href="@{/students/{studentId}/records/edit/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">編集</a>
+                                <a class="slds-button slds-button_outline-brand"
+                                   th:href="@{/students/{studentId}/records/delete/{recordId}(studentId=${student.studentId}, recordId=${record.recordId})}">削除</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(records)}">
+                        <td colspan="4">成績データはまだ登録されていません。</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>

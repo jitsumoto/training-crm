@@ -1,43 +1,68 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>学生管理</title>
-</head>
-<body>
-    <h1>学生一覧</h1>
-
-    <p>
-        <a th:href="@{/projects}">案件一覧</a>
-    </p>
-
-    <!-- 新規登録ボタン -->
-    <a th:href="@{/students/new}">新規登録</a>
-
-    <!-- 一覧表 -->
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>名前</th>
-            <th>Email</th>
-            <th>電話番号</th>
-            <th>クラス</th>
-            <th>操作</th>
-        </tr>
-        <tr th:each="student : ${students}">
-            <td th:text="${student.studentId}"></td>
-            <td th:text="${student.name}"></td>
-            <td th:text="${student.email}"></td>
-            <td th:text="${student.phone}"></td>
-            <td th:text="${student.className}"></td>
-            <td>
-                <a th:href="@{/students/edit/{id}(id=${student.studentId})}">編集</a>
-                <a th:href="@{/students/delete/{id}(id=${student.studentId})}"
-                   onclick="return confirm('削除しますか？');">削除</a>				|
-				        <!-- 成績一覧 -->
-				        <a th:href="@{/students/{id}/records/list(id=${student.studentId})}">成績一覧</a>
-            </td>
-        </tr>
-    </table>
+<head th:replace="fragments/layout :: head('学生一覧')"></head>
+<body class="slds-scope">
+<div class="app-shell">
+    <div th:replace="fragments/layout :: header('students')"></div>
+     <main class="app-main slds-p-horizontal_medium slds-p-vertical_small">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-contact" title="students">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="https://www.lightningdesignsystem.com/assets/icons/standard-sprite/svg/symbols.svg#contact"></use>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">学生一覧</h2>
+                        <p class="slds-text-body_small">Salesforce 風デザインで学生情報を管理できます。</p>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <a class="slds-button slds-button_neutral" th:href="@{/projects}">案件一覧</a>
+                    <a class="slds-button slds-button_brand" th:href="@{/students/new}">新規学生登録</a>
+                </div>
+            </div>
+            <div class="slds-card__body">
+                <div class="slds-table_header-fixed_container slds-scrollable_x">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate">ID</div></th>
+                            <th scope="col"><div class="slds-truncate">名前</div></th>
+                            <th scope="col"><div class="slds-truncate">Email</div></th>
+                            <th scope="col"><div class="slds-truncate">電話番号</div></th>
+                            <th scope="col"><div class="slds-truncate">クラス</div></th>
+                            <th scope="col"><div class="slds-truncate">操作</div></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="student : ${students}" class="slds-hint-parent">
+                            <td th:text="${student.studentId}"></td>
+                            <td th:text="${student.name}"></td>
+                            <td th:text="${student.email}"></td>
+                            <td th:text="${student.phone}"></td>
+                            <td th:text="${student.className}"></td>
+                            <td>
+                                <div class="slds-button-group" role="group">
+                                    <a class="slds-button slds-button_neutral" th:href="@{/students/edit/{id}(id=${student.studentId})}">編集</a>
+                                    <a class="slds-button slds-button_outline-brand" th:href="@{/students/delete/{id}(id=${student.studentId})}"
+                                       onclick="return confirm('削除しますか？');">削除</a>
+                                    <a class="slds-button slds-button_neutral" th:href="@{/students/{id}/records/list(id=${student.studentId})}">成績</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(students)}">
+                            <td colspan="6">学生はまだ登録されていません。</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>
